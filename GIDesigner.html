@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>GI Designer V2</title>
+
+    <style>
+        /*html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }*/
+
+        html, body, #mapDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+        }
+
+        body {
+            padding-top: 50px;
+            overflow: hidden;
+        }
+
+        #over_map {
+            position: absolute;
+            top: 40px;
+            left: 10px;
+            z-index: 99;
+        }
+
+        #tree_selection {
+            position: absolute;
+            top: 40px;
+            left: 10px;
+            z-index: 99;
+            border: 1px solid black;
+        }
+
+        #map, #pano {
+            float: left;
+            height: 100%;
+            width: 50%;
+        }
+
+        #wrapper {
+            min-height: 100%;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0px;
+            left: 0;
+            display: inline-block;
+        }
+
+        #main-wrapper {
+            height: 100%;
+            overflow-y: auto;
+            padding: 50px 0 0px 0;
+            transition: all .5s linear;
+            -moz-transition: all .5s linear;
+            -webkit-transition: all .5s linear;
+            -o-transition: all .5s linear;
+        }
+
+        #main {
+            position: relative;
+            height: 100%;
+            overflow-y: auto;
+            padding: 0 1px;
+        }
+    </style>
+
+    <!--Java Scripts-->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-animate.js"></script>
+    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.1.2.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <!--StyleSheets-->
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+     <!-- JSZip library -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+
+    <style>
+        .panel-transparent {
+            background: none;
+        }
+
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu > .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -6px;
+                margin-left: -1px;
+                -webkit-border-radius: 0 6px 6px 6px;
+                -moz-border-radius: 0 6px 6px 6px;
+                border-radius: 0 6px 6px 6px;
+            }
+
+            .dropdown-submenu:hover > .dropdown-menu {
+                display: block;
+            }
+
+            .dropdown-submenu > a:after {
+                display: block;
+                content: " ";
+                float: right;
+                width: 0;
+                height: 0;
+                border-color: transparent;
+                border-style: solid;
+                border-width: 5px 0 5px 5px;
+                border-left-color: #cccccc;
+                margin-top: 5px;
+                margin-right: -10px;
+            }
+
+            .dropdown-submenu:hover > a:after {
+                border-left-color: #ffffff;
+            }
+
+            .dropdown-submenu.pull-left {
+                float: none;
+            }
+
+                .dropdown-submenu.pull-left > .dropdown-menu {
+                    left: -100%;
+                    margin-left: 10px;
+                    -webkit-border-radius: 6px 0 6px 6px;
+                    -moz-border-radius: 6px 0 6px 6px;
+                    border-radius: 6px 0 6px 6px;
+                }
+
+        .esriPrint .dijitComboButton .dijitIcon {
+            background-image: url(genericprint.png);
+            background-repeat: no-repeat;
+            display: inline-block;
+            height: 16px;
+            width: 16px;
+            margin: 4px 0 154px 4px;
+        }
+    </style>
+
+
+    <!--RHESSYS Related Scripts-->
+    <script src="js/MaterialIconGenerator.js"></script>
+    <script src="js/MaterialMarkers.js"></script>
+    <script src="js/setupMaps.js"></script>
+    <script src="js/menu.js"></script>
+
+</head>
+<body>
+    <div id="header" class="navbar navbar-default navbar-fixed-top">
+        <nav class="navbar navbar-fixed-top navbar-inverse navbar-left">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a href="" target="_blank" style="width:42px;height:42px;border:0;">
+                    </a>
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand">GiDesigner</a>
+                </div>
+                <div>
+                    <div id="navbar" class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle btn-lg" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Materials<span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                    <li class="dropdown-submenu" data-toggle="tooltip" data-placement="bottom"
+                                        title="To pick a Tree (Click on right sub-menu).">
+                                        <a href="#">Trees</a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a id="menuTreeA" data-toggle="modal" data-id="TreeA" class="open-Tree btn btn-info">Tree A <img src="icons/tree1_icon.png" /></a>
+                                            </li>
+                                            <li>
+                                                <a id="menuTreeB" data-toggle="modal" data-id="TreeB" class="open-Tree btn btn-lg">Tree B <img src="icons/tree2_icon.png" /></a>
+                                            </li>
+                                            <li>
+                                                <a id="menuTreeC" data-toggle="modal" data-id="TreeC" class="open-Tree btn btn-lg">Tree C <img src="icons/tree3_icon.png" /></a>
+                                            </li>
+                                            <li>
+                                                <a id="menuTreeD" data-toggle="modal" data-id="TreeD" class="open-Tree btn btn-lg">Tree D <img src="icons/tree4_icon.png" /></a>
+                                            </li>
+                                            <li>
+                                                <a id="menuTreeE" data-toggle="modal" data-id="TreeE" class="open-Tree btn btn-lg">Tree E <img src="icons/tree5_icon.png" /></a>
+                                            </li>
+                                            <li>
+                                                <a id="menuTreeF" data-toggle="modal" data-id="TreeF" class="open-Tree btn btn-lg">Tree F <img src="icons/tree6_icon.png" /></a>
+                                            </li>
+                                            <li>
+                                                <a id="menuTreeG" data-toggle="modal" data-id="TreeG" class="open-Tree btn btn-lg">Tree G <img src="icons/tree7_icon.png" /></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-submenu" data-toggle="tooltip" data-placement="bottom"
+                                        title="To pick a Bush (Click on right sub-menu).">
+                                        <a href="#">Bush</a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a id="BushA" data-toggle="modal" data-id="1" class="open-Bush btn btn-lg">TODO</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-submenu" data-toggle="tooltip" data-placement="bottom"
+                                        title="To pick a Groundcover (Click on right sub-menu).">
+                                        <a href="#">Groundcover</a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a id="GroundcoverA" data-toggle="modal" data-id="1" class="open-Groundcover btn btn-lg">TODO</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="btn-group btn-group-lg">
+                                    <button id="menusizeL" type="button" data-id="sizeL" class="open-MaterialSize btn btn-primary">L</button>
+                                    <button id="menusizeM" type="button" data-id="sizeM" class="open-MaterialSize btn btn-info">M</button>
+                                    <button id="menusizeS" type="button" data-id="sizeS" class="open-MaterialSize btn btn-primary">S</button>
+                                </div>
+                            </li>
+                        </ul>
+
+                    </div>
+
+                 </div>
+            </div>
+        </nav>
+    </div>
+    <div id="wrapper">
+        <div id="main-wrapper" class="col-lg-12 col-md-12 col-xs-12">
+            <div id="main">
+                <div id="map"></div>
+                <div id="pano"></div>
+                <div id="over_map"></div>
+            </div>
+        </div>
+    </div>
+
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=ADD_YOUR_API_KEY&libraries=drawing&callback=initialize_Maps">
+    </script>
+
+
+</body>
+</html>
